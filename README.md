@@ -5,7 +5,7 @@ Simulation code of our paper ''Towards Decentralized Task Offloading and Resourc
 
 **This manuscript is currently in the review process**
 
-We have designed a large number of portable mobile edge computing multi-agent deep reinforcement learning (MADRL) environments to verify different MADRL algorithms. Specifically, The IPPO and MAPPO algorithms are modified based on [light-mappo](https://github.com/tinyzqh/light_mappo).
+We have designed a large number of portable multi-agent deep reinforcement learning (MADRL) environments about MEC to verify different algorithms. Specifically, The IPPO and MAPPO algorithms are modified based on [light-mappo](https://github.com/tinyzqh/light_mappo).
 
 ## Installation
 
