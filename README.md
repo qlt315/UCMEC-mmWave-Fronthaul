@@ -1,5 +1,5 @@
 # UCMEC-mmWave-Fronthaul
-Simulation code of our paper ''Towards Decentralized Task Offloading and Resource Allocation in User-Centric Mobile Edge Computing''. This is the extended version of our previous paper ``When the User-Centric Network Meets Mobile Edge Computing: Challenges and Optimization''.
+Simulation code of our paper ''Towards Decentralized Task Offloading and Resource Allocation in User-Centric MEC''. This is the extended version of our previous paper ``When the User-Centric Network Meets Mobile Edge Computing: Challenges and Optimization''.
 
 **This manuscript is currently in the review process**
 
