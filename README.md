@@ -1,9 +1,11 @@
 # UCMEC-mmWave-Fronthaul
 Simulation code of our paper ''Towards Decentralized Task Offloading and Resource Allocation in User-Centric MEC''. This is the extended version of our previous paper ``When the User-Centric Network Meets Mobile Edge Computing: Challenges and Optimization''.
 
+Abstract: In the traditional cellular-based mobile edge computing (MEC), users at the edge of the cell are prone to suffer severe inter-cell interference and signal attenuation, leading to low throughput even transmission interruptions. Such edge effect severely obstructs offloading of tasks to MEC servers. To address this issue, we propose user-centric mobile edge computing (UCMEC), a novel MEC architecture integrating user-centric transmission, which can ensure high throughput and reliable communication for task offloading. Then, we formulate an optimization problem with joint consideration of task offloading, power allocation, and computing resource allocation in UCMEC, aiming at obtaining the optimal performance in terms of long-term average total delay. To solve the intractable problem, we propose two decentralized joint optimization schemes based on multi-agent deep reinforcement learning (MADRL) and convex optimization, which consider both cooperation and non-cooperation among network nodes. Simulation results demonstrate that the proposed schemes in UCMEC can significantly improve the uplink transmission rate by at most 343.56% and reduce the long-term average total delay by at most 45.57% compared to traditional cellular-based MEC.
+
 **This manuscript is currently in the review process**
 
-We have designed a large number of portable multi-agent deep reinforcement learning (MADRL) environments of MEC to verify different algorithms. Specifically, The IPPO and MAPPO algorithms are modified based on [light-mappo](https://github.com/tinyzqh/light_mappo).
+We have designed a large number of portable multi-agent deep reinforcement learning (MADRL) environments of UCMEC to verify different algorithms. Specifically, The IPPO and MAPPO algorithms are modified based on [light-mappo](https://github.com/tinyzqh/light_mappo). Other MADRL algorithms like IQL and MADDPG are simulated based on [epymarl](https://github.com/uoe-agents/epymarl). Thanks very much for the contributions of the authors of these repositories. Please visit the homepage of epymarl to view specific usage tutorials.
 
 ## Installation
 
@@ -56,4 +58,4 @@ Just write this part of the code, and you can seamlessly connect with MAPPO. Aft
 
 In the train.py file, choose to comment out continuous environment or discrete environment to switch the demo environment.
 
-Other MADRL algorithms are simulated based on [epymarl](https://github.com/uoe-agents/epymarl). Thanks very much for the contributions of the authors of these repositories. Please visit the homepage of epymarl to view specific usage tutorials.
+
