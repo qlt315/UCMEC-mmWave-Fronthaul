@@ -20,28 +20,28 @@ reward_list(6,:) = reward_MPO_noncoop;
 reward_list(7,:) = reward_MADDPG_coop;
 reward_list(8,:) = reward_IQL_noncoop;
 
-step_index = 1:200:50000;
+episode_index = 1:200:50000;
 load("reward_list_processed.mat");
 
 reward_list = reward_list * 1000;
 reward_list_processed = reward_list_processed * 1000;
-% plot(step_index,reward_list(1,:),'linewidth',2,'Color',[0  114  189]/255); hold on;
-% plot(step_index,reward_list(2,:),'linewidth',2,'Color',[0.3010 0.7450 0.9330]); 
-% plot(step_index,reward_list(3,:),'linewidth',2,'Color',[0.8500 0.3250 0.0980]); 
-% plot(step_index,reward_list(4,:),'linewidth',2,'Color',[0.9290 0.6940 0.1250]); 
-% plot(step_index,reward_list(5,:),'linewidth',2,'Color',[0.4660 0.6740 0.1880]); 
-% plot(step_index,reward_list(6,:),'linewidth',2,'Color',[0.6784  1  0.1843]); 
-% plot(step_index,reward_list(7,:),'linewidth',2,'Color',[0.4940 0.1840 0.5560]); 
-% plot(step_index,reward_list(8,:),'linewidth',2,'Color',[0.6350 0.0780 0.1840]); 
+% plot(episode_index,reward_list(1,:),'linewidth',2,'Color',[0  114  189]/255); hold on;
+% plot(episode_index,reward_list(2,:),'linewidth',2,'Color',[0.3010 0.7450 0.9330]); 
+% plot(episode_index,reward_list(3,:),'linewidth',2,'Color',[0.8500 0.3250 0.0980]); 
+% plot(episode_index,reward_list(4,:),'linewidth',2,'Color',[0.9290 0.6940 0.1250]); 
+% plot(episode_index,reward_list(5,:),'linewidth',2,'Color',[0.4660 0.6740 0.1880]); 
+% plot(episode_index,reward_list(6,:),'linewidth',2,'Color',[0.6784  1  0.1843]); 
+% plot(episode_index,reward_list(7,:),'linewidth',2,'Color',[0.4940 0.1840 0.5560]); 
+% plot(episode_index,reward_list(8,:),'linewidth',2,'Color',[0.6350 0.0780 0.1840]); 
 
-plot(step_index,reward_list_processed(1,:),'linewidth',2,'Color',[0  114  189]/255); hold on;
-plot(step_index,reward_list_processed(2,:),'linewidth',2,'Color',[0.3010 0.7450 0.9330]); 
-plot(step_index,reward_list_processed(3,:),'linewidth',2,'Color',[0.8500 0.3250 0.0980]); 
-plot(step_index,reward_list_processed(4,:),'linewidth',2,'Color',[0.9290 0.6940 0.1250]); 
-plot(step_index,reward_list_processed(5,:),'linewidth',2,'Color',[0.4660 0.6740 0.1880]); 
-plot(step_index,reward_list_processed(6,:),'linewidth',2,'Color',[0.6784  1  0.1843]); 
-plot(step_index,reward_list_processed(7,:),'linewidth',2,'Color',[0.4940 0.1840 0.5560]); 
-plot(step_index,reward_list_processed(8,:),'linewidth',2,'Color',[0.6350 0.0780 0.1840]); 
+plot(episode_index,reward_list_processed(1,:),'linewidth',2,'Color',[0  114  189]/255); hold on;
+plot(episode_index,reward_list_processed(2,:),'linewidth',2,'Color',[0.3010 0.7450 0.9330]); 
+plot(episode_index,reward_list_processed(3,:),'linewidth',2,'Color',[0.8500 0.3250 0.0980]); 
+plot(episode_index,reward_list_processed(4,:),'linewidth',2,'Color',[0.9290 0.6940 0.1250]); 
+plot(episode_index,reward_list_processed(5,:),'linewidth',2,'Color',[0.4660 0.6740 0.1880]); 
+plot(episode_index,reward_list_processed(6,:),'linewidth',2,'Color',[0.6784  1  0.1843]); 
+plot(episode_index,reward_list_processed(7,:),'linewidth',2,'Color',[0.4940 0.1840 0.5560]); 
+plot(episode_index,reward_list_processed(8,:),'linewidth',2,'Color',[0.6350 0.0780 0.1840]); 
 
 grid on;
 legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)");
@@ -76,8 +76,10 @@ plot(User_index,Rate_user_num(6,:),"*--",'Markersize',7,'linewidth',2,'Color',[2
 plot(User_index,Rate_user_num(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
 plot(User_index,Rate_user_num(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
 
+plot(User_index,Rate_user_num(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
+
 grid on;
-legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)");
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)", "BCD (Coop)");
 xlabel('Number of Users'),ylabel('Average Uplink Rate (Mbps)');
 set(gca,'FontName','Times New Roman','FontSize',12);
 
@@ -97,8 +99,10 @@ plot(AP_Num_index,Rate_ap_num(6,:),"*--",'Markersize',7,'linewidth',2,'Color',[2
 plot(AP_Num_index,Rate_ap_num(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
 plot(AP_Num_index,Rate_ap_num(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
 
+plot(AP_Num_index,Rate_ap_num(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
+
 grid on;
-legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)");
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)","BCD (Coop)");
 xlabel('Number of APs'),ylabel('Average Uplink Rate (Mbps)');
 set(gca,'FontName','Times New Roman','FontSize',12);
 
@@ -117,8 +121,10 @@ plot(Max_power_index,Rate_max_power(6,:),"*--",'Markersize',7,'linewidth',2,'Col
 plot(Max_power_index,Rate_max_power(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
 plot(Max_power_index,Rate_max_power(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
 
+plot(Max_power_index,Rate_max_power(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
+
 grid on;
-legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)");
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)","BCD (Coop)");
 xlabel('Maximum Transmit Power (W)'),ylabel('Average Uplink Rate (Mbps)');
 set(gca,'FontName','Times New Roman','FontSize',12);
 
@@ -137,8 +143,9 @@ plot(AP_cluster_index,Rate_cluster_size(6,:),"*--",'Markersize',7,'linewidth',2,
 plot(AP_cluster_index,Rate_cluster_size(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
 plot(AP_cluster_index,Rate_cluster_size(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
 
+plot(AP_cluster_index,Rate_cluster_size(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
 grid on;
-legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)");
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)","BCD (Coop)");
 xlabel('AP Cluster Size'),ylabel('Average Uplink Rate (Mbps)');
 set(gca,'FontName','Times New Roman','FontSize',12);
 
@@ -159,8 +166,10 @@ plot(User_index,Delay_user_num(6,:),"*--",'Markersize',7,'linewidth',2,'Color',[
 plot(User_index,Delay_user_num(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
 plot(User_index,Delay_user_num(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
 
+plot(User_index,Delay_user_num(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
+
 grid on;
-legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)");
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)","BCD (Coop)");
 xlabel('Number of Users'),ylabel('Average Total Delay (ms)');
 set(gca,'FontName','Times New Roman','FontSize',12);
 
@@ -180,8 +189,9 @@ plot(AP_Num_index,Delay_ap_num(6,:),"*--",'Markersize',7,'linewidth',2,'Color',[
 plot(AP_Num_index,Delay_ap_num(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
 plot(AP_Num_index,Delay_ap_num(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
 
+plot(AP_Num_index,Delay_ap_num(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
 grid on;
-legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)");
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)","BCD (Coop)");
 xlabel('Number of APs'),ylabel('Average Total Delay (ms)');
 set(gca,'FontName','Times New Roman','FontSize',12);
 
@@ -200,8 +210,10 @@ plot(Max_power_index,Delay_max_power(6,:),"*--",'Markersize',7,'linewidth',2,'Co
 plot(Max_power_index,Delay_max_power(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
 plot(Max_power_index,Delay_max_power(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
 
+plot(Max_power_index,Delay_max_power(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
+
 grid on;
-legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)");
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)","BCD (Coop)");
 xlabel('Maximum Transmit Power (W)'),ylabel('Average Total Delay (ms)');
 set(gca,'FontName','Times New Roman','FontSize',12);
 
@@ -220,10 +232,48 @@ plot(AP_cluster_index,Delay_cluster_size(6,:),"*--",'Markersize',7,'linewidth',2
 plot(AP_cluster_index,Delay_cluster_size(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
 plot(AP_cluster_index,Delay_cluster_size(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
 
+plot(AP_cluster_index,Delay_cluster_size(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
+
 grid on;
-legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)");
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)","BCD (Coop)");
 xlabel('AP Cluster Size'),ylabel('Average Total Delay (ms)');
 set(gca,'FontName','Times New Roman','FontSize',12);
 
+% Figure 13 User Num VS Average Total Delay
+plot(User_index,Delay_user_num_mobi(1,:),"-o",'Markersize',7,'linewidth',2,'Color',[0  114  189]/255); hold on;
+plot(User_index,Delay_user_num_mobi(2,:),"o--",'Markersize',7,'linewidth',2,'Color',[0  114  189]/255);
 
+plot(User_index,Delay_user_num_mobi(3,:),"-d",'Markersize',7,'linewidth',2,'Color',[217  83  25]/255); 
+plot(User_index,Delay_user_num_mobi(4,:),"d--",'Markersize',7,'linewidth',2,'Color',[217  83  25]/255);
 
+plot(User_index,Delay_user_num_mobi(5,:),"-*",'Markersize',7,'linewidth',2,'Color',[237  177  32]/255);
+plot(User_index,Delay_user_num_mobi(6,:),"*--",'Markersize',7,'linewidth',2,'Color',[237  177  32]/255);
+
+plot(User_index,Delay_user_num_mobi(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
+plot(User_index,Delay_user_num_mobi(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
+
+plot(User_index,Delay_user_num_mobi(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
+
+grid on;
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)","BCD (Coop)");
+xlabel('Number of Users'),ylabel('Average Total Delay (ms)');
+set(gca,'FontName','Times New Roman','FontSize',12);
+
+% Figure 14 AP Num VS Average Total Delay
+plot(AP_Num_index,Delay_ap_num_mobi(1,:),"-o",'Markersize',7,'linewidth',2,'Color',[0  114  189]/255); hold on;
+plot(AP_Num_index,Delay_ap_num_mobi(2,:),"o--",'Markersize',7,'linewidth',2,'Color',[0  114  189]/255);
+
+plot(AP_Num_index,Delay_ap_num_mobi(3,:),"-d",'Markersize',7,'linewidth',2,'Color',[217  83  25]/255); 
+plot(AP_Num_index,Delay_ap_num_mobi(4,:),"d--",'Markersize',7,'linewidth',2,'Color',[217  83  25]/255);
+
+plot(AP_Num_index,Delay_ap_num_mobi(5,:),"-*",'Markersize',7,'linewidth',2,'Color',[237  177  32]/255);
+plot(AP_Num_index,Delay_ap_num_mobi(6,:),"*--",'Markersize',7,'linewidth',2,'Color',[237  177  32]/255);
+
+plot(AP_Num_index,Delay_ap_num_mobi(7,:),"-x",'Markersize',7,'linewidth',2,'Color',[126 47 142]/255);
+plot(AP_Num_index,Delay_ap_num_mobi(8,:),"-^",'Markersize',7,'linewidth',2,'Color',[0.13 0.55 0.13]);
+
+plot(AP_Num_index,Delay_ap_num_mobi(9,:),"-p",'Markersize',7,'linewidth',2,'Color',[0,0,0]);
+grid on;
+legend('Proposed (Coop)','Proposed (Non-Coop)', "CBO (Coop)", "CBO (Non-Coop)", "MPO (Coop)", "MPO (Non-Coop)", "MADDPG (Coop)", "IQL (Non-Coop)","BCD (Coop)");
+xlabel('Number of APs'),ylabel('Average Total Delay (ms)');
+set(gca,'FontName','Times New Roman','FontSize',12);
