@@ -13,6 +13,7 @@ class MA_CBO_dyna_noncoop(object):
         # Initialization
         gym.logger.set_level(40)
         np.random.seed(3)
+        self.is_mobile = True
         self.M = 50  # number of users
         self.N = 200  # number of APs
         self.varsig = 16  # number of antennas of each AP
@@ -134,14 +135,14 @@ class MA_CBO_dyna_noncoop(object):
         self.n_agents = self.M_sim
         self.agent_num = self.n_agents
         self.obs_dim = 5  # set the observation dimension of agents
-        self.action_dim = 13
+        self.action_dim = 10
         self._render = render
         # action space: [omega_1,omega_2,...,omega_K,p]  K+1 continuous vector for each agent
         # a in {0,1,2,3,4}, p in {0, 1, 2, 3, 4} (totally 5 levels (p+1)/5*100 mW)
         self.omega_last = np.zeros([self.M_sim])
         self.p_last = np.zeros([self.M_sim])
         self.delay_last = np.zeros([self.M_sim, 1])
-        self.action_space = spaces.Tuple(tuple([spaces.Discrete(13)] * self.n_agents))
+        self.action_space = spaces.Tuple(tuple([spaces.Discrete(10)] * self.n_agents))
         # state space: [r_1(t-1),r_2(t-1),...,r_M(t-1)]  1xM continuous vector. -> uplink rate
         # r in [0, 10e8]
         self.obs_low = np.array([50000, 500, 0, 0, 0])
@@ -155,44 +156,37 @@ class MA_CBO_dyna_noncoop(object):
         self.step_num = 0
 
     def action_mapping(self, action_agent):
-        # Transform the action space form MultiDiscrete to Discrete (1+4*3=13 cases)
+        omega_agent = 0
+        p_agent = 0
+        # Transform the action space form MultiDiscrete to Discrete (1+3*3=10 cases)
         if action_agent[0] == 1:  # local processing
             omega_agent = 0
             p_agent = 0
         elif action_agent[1] == 1:
             omega_agent = 1
-            p_agent = 0
+            p_agent = 1
         elif action_agent[2] == 1:
             omega_agent = 1
-            p_agent = 1
+            p_agent = 2
         elif action_agent[3] == 1:
             omega_agent = 1
-            p_agent = 2
-        elif action_agent[4] == 1:
-            omega_agent = 1
             p_agent = 3
+        elif action_agent[4] == 1:
+            omega_agent = 2
+            p_agent = 1
         elif action_agent[5] == 1:
             omega_agent = 2
-            p_agent = 0
+            p_agent = 2
         elif action_agent[6] == 1:
             omega_agent = 2
-            p_agent = 1
-        elif action_agent[7] == 1:
-            omega_agent = 2
-            p_agent = 2
-        elif action_agent[8] == 1:
-            omega_agent = 2
             p_agent = 3
-        elif action_agent[9] == 1:
-            omega_agent = 3
-            p_agent = 0
-        elif action_agent[10] == 1:
+        elif action_agent[7] == 1:
             omega_agent = 3
             p_agent = 1
-        elif action_agent[11] == 1:
+        elif action_agent[8] == 1:
             omega_agent = 3
             p_agent = 2
-        elif action_agent[12] == 1:
+        elif action_agent[9] == 1:
             omega_agent = 3
             p_agent = 3
         return omega_agent, p_agent
@@ -298,6 +292,37 @@ class MA_CBO_dyna_noncoop(object):
         Task_density = np.random.uniform(500, 1000, [1, self.M])  # task density cpu cycles per bit
         # Task_max_delay = np.random.uniform(2, 5, [1, M])  # task max delay in second
 
+        # path-loss
+        if self.is_mobile:
+            max_speed = 15 * self.tau_c  # maximum speed of users (m / tau_c second)
+            min_speed = 5 * self.tau_c  # maximum speed of users (m / tau_c second)
+            destination_users = np.random.random_sample([self.M, 2]) * 900
+            user_speed = np.random.uniform(min_speed, max_speed, [self.M, 1])
+            for i in range(self.M):
+                slope = np.sqrt(np.abs(self.locations_users[i, 0] - destination_users[i, 0]) ** 2 + np.abs(
+                    self.locations_users[i, 1] - destination_users[i, 1]) ** 2)
+                self.locations_users[i, 0] = self.locations_users[i, 0] + user_speed[i, 0] * np.abs(
+                    destination_users[i, 0] - self.locations_users[i, 0]) / slope
+                self.locations_users[i, 1] = self.locations_users[i, 1] + user_speed[i, 0] * np.abs(
+                    destination_users[i, 1] - self.locations_users[i, 1]) / slope
+
+        for i in range(self.M):
+            for j in range(self.N):
+                self.distance_matrix[i, j] = math.sqrt((self.locations_users[i, 0] - self.locations_aps[j, 0]) ** 2
+                                                       + (self.locations_users[i, 1] - self.locations_aps[j, 1]) ** 2)
+        # distance
+        for i in range(self.M):
+            for j in range(self.N):
+                # three slope path-loss model
+                if self.distance_matrix[i, j] > self.d_1:
+                    self.PL[i, j] = -self.L - 35 * np.log10(self.distance_matrix[i, j] / 1000)
+                elif self.d_0 <= self.distance_matrix[i, j] <= self.d_1:
+                    self.PL[i, j] = -self.L - 10 * np.log10(
+                        (self.d_1 / 1000) ** 1.5 * (self.distance_matrix[i, j] / 1000) ** 2)
+                else:
+                    self.PL[i, j] = -self.L - 10 * np.log10((self.d_1 / 1000) ** 1.5 * (self.d_0 / 1000) ** 2)
+
+
         # access channel
         kappa_1 = np.random.rand(1, self.N)  # parameter in Eq. (5)
         kappa_2 = np.random.rand(1, self.M)  # parameter in Eq. (5)
@@ -375,7 +400,7 @@ class MA_CBO_dyna_noncoop(object):
                 task_mat[i, CPU_id] = Task_size[0, i] * Task_density[0, i]
 
         # Each CPU solves a resource allocation optimization problem
-        actual_C = np.zeros([self.M_sim, 1])
+        actual_C = np.zeros([self.M_sim, self.K])
         for i in range(self.K):
             serve_user_id = []
             serve_user_task = []
@@ -402,13 +427,13 @@ class MA_CBO_dyna_noncoop(object):
             prob.solve(solver=cp.SCS, verbose=False)
             for k in range(len(serve_user_id)):
                 _C = C.value
-                actual_C[serve_user_id[k], 0] = _C[k]
+                actual_C[serve_user_id[k], i] = _C[k]
 
         actual_process_delay = np.zeros([self.M_sim, 1])
         for i in range(self.M_sim):
             if omega_current[i] != 0:
                 CPU_id = int(omega_current[i] - 1)
-                actual_process_delay[i, 0] = task_mat[i, CPU_id] / actual_C[i, 0]
+                actual_process_delay[i, 0] = task_mat[i, CPU_id] / np.sum(actual_C[i, :])
         '''
         process_delay = cp.max(cp.multiply(task_mat, cp.inv_pos(C)))  # Mx1
         func = cp.Minimize(cp.sum(cp.maximum(local_delay, front_delay + uplink_delay + process_delay)))

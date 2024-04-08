@@ -10,14 +10,15 @@ import cvxpy as cp
 class MA_MPO_stat_coop(object):
     def __init__(self, render: bool = False):
         # Initialization
+        self.is_mobile = False
         gym.logger.set_level(40)
         np.random.seed(3)
-        self.M = 30  # number of users
+        self.M = 60  # number of users
         self.N = 60  # number of APs
         self.varsig = 16  # number of antennas of each AP
         self.K = 3  # number of CPUs
         self.P_max = 0.1  # maximum transmit power of user / pilot power
-        self.M_sim = 10  # number of users for simulation
+        self.M_sim = 30  # number of users for simulation
         self.N_sim = 50  # number of APs for simulation
 
         # locations of users and APs
@@ -303,6 +304,58 @@ class MA_MPO_stat_coop(object):
 
     def step(self, action):
         self.step_num += 1
+
+        if self.is_mobile:
+            max_speed = 15 * self.tau_c  # maximum speed of users (m / tau_c second)
+            min_speed = 5 * self.tau_c  # maximum speed of users (m / tau_c second)
+            destination_users = np.random.random_sample([self.M, 2]) * 900
+            user_speed = np.random.uniform(min_speed, max_speed, [self.M, 1])
+            for i in range(self.M):
+                slope = np.sqrt(np.abs(self.locations_users[i, 0] - destination_users[i, 0]) ** 2 + np.abs(
+                    self.locations_users[i, 1] - destination_users[i, 1]) ** 2)
+                self.locations_users[i, 0] = self.locations_users[i, 0] + user_speed[i, 0] * np.abs(
+                    destination_users[i, 0] - self.locations_users[i, 0]) / slope
+                self.locations_users[i, 1] = self.locations_users[i, 1] + user_speed[i, 0] * np.abs(
+                    destination_users[i, 1] - self.locations_users[i, 1]) / slope
+
+            for i in range(self.M):
+                for j in range(self.N):
+                    self.distance_matrix[i, j] = math.sqrt((self.locations_users[i, 0] - self.locations_aps[j, 0]) ** 2
+                                                           + (self.locations_users[i, 1] - self.locations_aps[j, 1]) ** 2)
+            for i in range(self.M):
+                for j in range(self.N):
+                    # three slope path-loss model
+                    if self.distance_matrix[i, j] > self.d_1:
+                        self.PL[i, j] = -self.L - 35 * np.log10(self.distance_matrix[i, j] / 1000)
+                    elif self.d_0 <= self.distance_matrix[i, j] <= self.d_1:
+                        self.PL[i, j] = -self.L - 10 * np.log10(
+                            (self.d_1 / 1000) ** 1.5 * (self.distance_matrix[i, j] / 1000) ** 2)
+                    else:
+                        self.PL[i, j] = -self.L - 10 * np.log10((self.d_1 / 1000) ** 1.5 * (self.d_0 / 1000) ** 2)
+
+            # access channel
+            kappa_1 = np.random.rand(1, self.N)  # parameter in Eq. (5)
+            kappa_2 = np.random.rand(1, self.M)  # parameter in Eq. (5)
+
+            for i in range(self.M):
+                for j in range(self.N):
+                    # Eq. (5) shadow fading computation
+                    self.mu[i, j] = math.sqrt(self.delta) * kappa_1[0, j] + math.sqrt(1 - self.delta) * kappa_2[
+                        0, i]  # MxN matrix as Eq. (5)
+
+                    # Eq. (2) channel computation
+                    self.beta[i, j] = pow(10, self.PL[i, j] / 10) * pow(10, (self.sigma_s * self.mu[i, j]) / 10)
+                    for k in range(self.varsig):
+                        self.h[i, j, k] = np.random.normal(loc=0, scale=0.5) + 1j * np.random.normal(loc=0, scale=0.5)
+                        self.access_chan[i, j, k] = np.sqrt(self.beta[i, j]) * self.h[i, j, k]
+
+            # MMSE channel estimation
+            theta = np.zeros([self.M, self.N])
+            for i in range(self.M):
+                for j in range(self.N):
+                    theta[i, j] = self.tau_p * self.P_max * (self.beta[i, j] ** 2) / (
+                            self.tau_p * self.P_max * self.beta[i, j] + self.noise_access)
+
         # obtain and clip the action
         omega_current = np.zeros([self.M_sim])
         p_current = np.ones([self.M_sim]) * self.P_max
@@ -354,7 +407,7 @@ class MA_MPO_stat_coop(object):
                 task_mat[i, CPU_id] = self.Task_size[0, i] * self.Task_density[0, i]
 
         # Each CPU solves a resource allocation optimization problem
-        actual_C = np.zeros([self.M_sim, 1])
+        actual_C = np.zeros([self.M_sim, self.K])
         for i in range(self.K):
             serve_user_id = []
             serve_user_task = []
@@ -367,29 +420,27 @@ class MA_MPO_stat_coop(object):
                     serve_user_id.append(j)
                     serve_user_task.append(task_mat[j, i])
                     _local_delay.append(local_delay[j, 0])
-                    _front_delay.append(front_delay[j, 0])
                     _uplink_delay.append(uplink_delay[j, 0])
             if len(serve_user_id) == 0:
                 continue
             C = cp.Variable(len(serve_user_id))
             _process_delay = cp.multiply(serve_user_task, cp.inv_pos(C))
             _local_delay = np.array(_local_delay)
-            _front_delay = np.array(_front_delay)
             _uplink_delay = np.array(_uplink_delay)
 
-            func = cp.Minimize(cp.sum(cp.maximum(_local_delay, _front_delay + _uplink_delay + _process_delay)))
+            func = cp.Minimize(cp.sum(cp.maximum(_local_delay, _uplink_delay + _process_delay)))
             cons = [0 <= C, cp.sum(C) <= self.C_edge[i, 0]]
             prob = cp.Problem(func, cons)
             prob.solve(solver=cp.SCS, verbose=False)
             for k in range(len(serve_user_id)):
                 _C = C.value
-                actual_C[serve_user_id[k], 0] = _C[k]
+                actual_C[serve_user_id[k], i] = _C[k]
 
         actual_process_delay = np.zeros([self.M_sim, 1])
         for i in range(self.M_sim):
             if omega_current[i] != 0:
                 CPU_id = int(omega_current[i] - 1)
-                actual_process_delay[i, 0] = task_mat[i, CPU_id] / actual_C[i, 0]
+                actual_process_delay[i, 0] = task_mat[i, CPU_id] / np.sum(actual_C[i, :])
         '''
         process_delay = cp.max(cp.multiply(task_mat, cp.inv_pos(C)))  # Mx1
         func = cp.Minimize(cp.sum(cp.maximum(local_delay, front_delay + uplink_delay + process_delay)))
