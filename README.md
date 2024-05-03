@@ -5,7 +5,7 @@ Abstract: In the traditional cellular-based mobile edge computing (MEC), users a
 
 **This manuscript is currently in the review process**
 
-We have designed a large number of portable multi-agent deep reinforcement learning (MADRL) environments of UCMEC to verify different algorithms. Specifically, The IPPO and MAPPO algorithms are modified based on [light-mappo](https://github.com/tinyzqh/light_mappo). Other MADRL algorithms like IQL and MADDPG are simulated based on [epymarl](https://github.com/uoe-agents/epymarl). Thanks very much for the contributions of the authors of these repositories. Please visit the homepage of epymarl to view specific usage tutorials.
+We have designed a large number of portable multi-agent deep reinforcement learning (MADRL) environments of UCMEC to verify different algorithms. Specifically, IPPO and MAPPO algorithms are modified based on [light-mappo](https://github.com/tinyzqh/light_mappo). Other MADRL algorithms like IQL and MADDPG are simulated based on [epymarl](https://github.com/uoe-agents/epymarl). Thanks very much for the contributions of the authors of these repositories. Please visit the homepage of epymarl to view specific usage tutorials.
 
 ## Installation
 
