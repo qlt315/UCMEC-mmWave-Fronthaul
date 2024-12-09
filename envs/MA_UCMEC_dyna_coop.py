@@ -12,9 +12,9 @@ class MA_UCMEC_dyna_coop(object):
         # Initialization
         self.is_mobile = True
         gym.logger.set_level(40)
-        np.random.seed(3)
-        self.M = 50  # number of users
-        self.N = 200  # number of APs
+        np.random.seed(37)
+        self.M = 60  # number of users
+        self.N = 60  # number of APs
         self.varsig = 16  # number of antennas of each AP
         self.K = 3  # number of CPUs
         self.P_max = 0.1  # maximum transmit power of user / pilot power
@@ -299,7 +299,7 @@ class MA_UCMEC_dyna_coop(object):
         for i in range(self.agent_num):
             sub_obs = np.random.uniform(low=self.obs_low, high=self.obs_high, size=(self.obs_dim,))
             sub_agent_obs.append(sub_obs)
-            print(np.shape(sub_agent_obs))
+            # print(np.shape(sub_agent_obs))
         return sub_agent_obs
 
     def step(self, action):
@@ -366,7 +366,7 @@ class MA_UCMEC_dyna_coop(object):
         omega_current = np.zeros([self.M_sim])
         p_current = np.zeros([self.M_sim])
         p_level = self.P_max / 4
-        print("Step Index:", self.step_num)
+        # print("Step Index:", self.step_num)
 
         for i in range(self.M_sim):
             omega_current[i], p_current[i] = self.action_mapping(action[i])
@@ -485,8 +485,8 @@ class MA_UCMEC_dyna_coop(object):
         for i in range(self.M_sim):
             reward[i, 0] = -0.9 * np.sum(total_delay) / self.M_sim + 0.1 * (
                     self.tau_c - np.sum(total_delay) / self.M_sim)
-        print("Average Total Delay (ms):", np.sum(total_delay) * 1000 / self.M_sim)
-        print("Average Uplink Rate (Mbps):", np.sum(uplink_rate_access) / (self.M_sim * 1e6))
+        # print("Average Total Delay (ms):", np.sum(total_delay) * 1000 / self.M_sim)
+        # print("Average Uplink Rate (Mbps):", np.sum(uplink_rate_access) / (self.M_sim * 1e6))
         sub_agent_obs = []
         sub_agent_reward = []
         sub_agent_done = []

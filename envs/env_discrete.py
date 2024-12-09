@@ -32,7 +32,7 @@ class DiscreteActionEnv(object):
     """
 
     def __init__(self):
-        self.env = MA_UCMEC_stat_coop()
+        self.env = MA_MPO_stat_coop()
         self.num_agent = self.env.agent_num
         self.signal_obs_dim = self.env.obs_dim
         self.signal_action_dim = self.env.action_dim
