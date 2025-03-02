@@ -68,7 +68,8 @@ class EnvRunner(Runner):
 
             # log information
             if episode % self.log_interval == 0:
-                reward_list[episode, 0] = rewards
+                reward_list[episode, 0] = np.mean(rewards)
+                print("episode average reward", np.mean(rewards))
                 end = time.time()
                 print(
                     "\n Scenario {} Algo {} Exp {} updates {}/{} episodes, total num timesteps {}/{}, FPS {}.\n".format(
