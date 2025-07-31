@@ -103,7 +103,7 @@ class EnvRunner(Runner):
             if episode % self.eval_interval == 0 and self.use_eval:
                 self.eval(total_num_steps)
         file_name = 'reward.mat'
-        savemat(file_name, {'reward': self.reward_list})
+        savemat(file_name, {'reward': reward_list})
 
     def warmup(self):
         # reset env
